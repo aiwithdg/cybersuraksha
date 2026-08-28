@@ -12,7 +12,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Enter a 10-digit Indian mobile number or +91 format",
+  phone: "Enter a 10-digit Indian mobile number, +91 format, or 1600/1601/140 series number",
   upi: "Enter a UPI ID such as name@bank",
   email: "Enter an email address",
   url: "Enter a full URL such as https://example.com",
@@ -33,7 +33,7 @@ function detectIdentifierType(value: string): IdentifierType {
     return "upi";
   }
 
-  if (/^(?:\+91[\s-]?|0)?[6-9]\d{9}$/.test(trimmed.replace(/\s+/g, ""))) {
+  if (/^(?:(?:\+91[\s-]?|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/.test(trimmed.replace(/\s+/g, ""))) {
     return "phone";
   }
 
@@ -257,18 +257,36 @@ export default function Home() {
           ) : null}
 
           {result?.status === "not_found" ? (
-            <section className="border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
-                No match found
-              </p>
-              <h2 className="mt-2 text-xl font-semibold">
-                Not found in our database.
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
-                Not found in our database - this does not guarantee it&apos;s
-                safe. Stay cautious.
-              </p>
-            </section>
+            <div className="grid gap-4">
+              {result.phone_trust_signal ? (
+                <section className="border border-blue-200 bg-blue-50 p-5 text-blue-950">
+                  <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
+                    Trusted-series signal
+                  </p>
+                  <h2 className="mt-2 text-xl font-semibold">
+                    {result.phone_trust_signal.label}
+                  </h2>
+                  <p className="mt-2 text-sm leading-6">
+                    {result.phone_trust_signal.message}
+                  </p>
+                  <p className="mt-3 text-sm font-medium leading-6">
+                    {result.phone_trust_signal.caution}
+                  </p>
+                </section>
+              ) : null}
+              <section className="border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+                  No match found
+                </p>
+                <h2 className="mt-2 text-xl font-semibold">
+                  Not found in our database.
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Not found in our database - this does not guarantee it&apos;s
+                  safe. Stay cautious.
+                </p>
+              </section>
+            </div>
           ) : null}
         </div>
       </section>

@@ -1,11 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
-import type { CheckResult, IdentifierType, Suspect } from "@/lib/types";
+import type { CheckResult, IdentifierType, PhoneTrustSignal, Suspect } from "@/lib/types";
 
 const identifierTypes = new Set<IdentifierType>(["phone", "upi", "email", "url"]);
 
 const validators: Record<IdentifierType, RegExp> = {
-  phone: /^(?:\+91|0)?[6-9]\d{9}$/,
+  phone: /^(?:(?:\+91|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/,
   upi: /^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   url: /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#][^\s]*)?$/i,
@@ -23,6 +23,7 @@ export async function POST(request: Request) {
 
     const identifierType = getIdentifierType(payload);
     const identifierValue = getIdentifierValue(payload, identifierType);
+    const phoneTrustSignal = getPhoneTrustSignal(identifierType, identifierValue);
 
     if (!identifierType || !identifierValue) {
       return NextResponse.json(
@@ -64,6 +65,11 @@ export async function POST(request: Request) {
       .maybeSingle<Suspect>();
 
     if (error) {
+      console.error("Check lookup failed", {
+        message: error.message,
+        code: error.code,
+      });
+
       return NextResponse.json({ error: "Unable to query suspect data." }, { status: 500 });
     }
 
@@ -72,6 +78,7 @@ export async function POST(request: Request) {
         status: "not_found",
         identifier_type: identifierType,
         identifier_value: identifierValue,
+        phone_trust_signal: phoneTrustSignal,
       });
     }
 
@@ -80,6 +87,7 @@ export async function POST(request: Request) {
       identifier_type: identifierType,
       identifier_value: identifierValue,
       matched_suspect: data,
+      phone_trust_signal: phoneTrustSignal,
     });
   } catch {
     return NextResponse.json({ error: "Unable to complete the check." }, { status: 500 });
@@ -118,4 +126,48 @@ function getIdentifierValue(payload: unknown, type: IdentifierType | null) {
   }
 
   return trimmed.toLowerCase();
+}
+
+function getPhoneTrustSignal(
+  type: IdentifierType | null,
+  value: string | null,
+): PhoneTrustSignal | undefined {
+  if (type !== "phone" || !value) {
+    return undefined;
+  }
+
+  if (/^1600\d{6}$/.test(value)) {
+    return {
+      kind: "bfsi_government_service",
+      label: "1600 trusted service series",
+      message:
+        "Numbers starting with 1600 are designated for service and transaction calls from regulated BFSI entities and government-to-citizen communication.",
+      caution:
+        "Treat this as a positive signal, not a guarantee. Never share OTPs, PINs, passwords, or full card details on a call.",
+    };
+  }
+
+  if (/^1601\d{6}$/.test(value)) {
+    return {
+      kind: "non_bfsi_service",
+      label: "1601 verified service series",
+      message:
+        "Numbers starting with 1601 are being used for verified service and transaction calls in sectors such as utilities, courier, and logistics.",
+      caution:
+        "Confirm the context of the call. A legitimate service call should not ask for sensitive banking credentials.",
+    };
+  }
+
+  if (/^140\d{7}$/.test(value)) {
+    return {
+      kind: "registered_promotional",
+      label: "140 promotional series",
+      message:
+        "Numbers starting with 140 are designated for promotional calls from registered entities.",
+      caution:
+        "Promotional registration does not make an offer safe. Be cautious with payment links, investment claims, and urgent requests.",
+    };
+  }
+
+  return undefined;
 }

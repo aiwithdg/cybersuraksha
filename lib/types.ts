@@ -48,9 +48,22 @@ export interface StatusHistory {
   created_at: string;
 }
 
+export type PhoneTrustSignalKind =
+  | "bfsi_government_service"
+  | "non_bfsi_service"
+  | "registered_promotional";
+
+export interface PhoneTrustSignal {
+  kind: PhoneTrustSignalKind;
+  label: string;
+  message: string;
+  caution: string;
+}
+
 export interface CheckResult {
   status: "flagged" | "not_found" | "invalid";
   identifier_type: IdentifierType;
   identifier_value: string;
   matched_suspect?: Suspect;
+  phone_trust_signal?: PhoneTrustSignal;
 }

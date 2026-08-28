@@ -34,7 +34,7 @@ export default async function AdminComplaintsPage() {
   if (!supabaseUrl || !serviceRoleKey) {
     return (
       <AdminShell>
-        <div className="border border-red-200 bg-red-50 p-5 text-sm font-medium text-red-800">
+        <div className="rounded-md border border-red-200 bg-red-50 p-5 text-sm font-medium text-red-800">
           Supabase service credentials are not configured. Add SUPABASE_SERVICE_ROLE_KEY to .env.local to use this demo admin page.
         </div>
       </AdminShell>
@@ -51,13 +51,13 @@ export default async function AdminComplaintsPage() {
   return (
     <AdminShell>
       {error ? (
-        <div className="border border-red-200 bg-red-50 p-5 text-sm font-medium text-red-800">
+        <div className="rounded-md border border-red-200 bg-red-50 p-5 text-sm font-medium text-red-800">
           Unable to load complaints.
         </div>
       ) : null}
 
       {!error && !complaints?.length ? (
-        <div className="border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 text-sm text-slate-600 shadow-sm">
           No complaints have been submitted yet.
         </div>
       ) : null}
@@ -69,12 +69,12 @@ export default async function AdminComplaintsPage() {
           )[0];
 
           return (
-            <article key={complaint.id} className="border border-slate-200 bg-white p-5 shadow-sm">
+            <article key={complaint.id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
               <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="text-lg font-semibold text-slate-950">{complaint.reference_number}</h2>
-                    <span className="border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-900">
+                    <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-900">
                       {formatStatus(complaint.status)}
                     </span>
                   </div>
@@ -101,7 +101,7 @@ export default async function AdminComplaintsPage() {
                   </dl>
                 </div>
 
-                <form action={advanceComplaintStatus} className="grid gap-3 border border-slate-200 bg-slate-50 p-4">
+                <form action={advanceComplaintStatus} className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
                   {/* Prototype-only admin control. Production must require authentication and role-based authorization. */}
                   <input type="hidden" name="complaint_id" value={complaint.id} />
                   <label className="block">
@@ -109,7 +109,7 @@ export default async function AdminComplaintsPage() {
                     <select
                       name="status"
                       defaultValue={complaint.status}
-                      className="h-11 w-full border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                      className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                     >
                       {statuses.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -123,12 +123,12 @@ export default async function AdminComplaintsPage() {
                     <input
                       name="note"
                       placeholder="Optional update note"
-                      className="h-11 w-full border border-slate-300 px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                      className="h-11 w-full rounded-md border border-slate-300 px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                     />
                   </label>
                   <button
                     type="submit"
-                    className="h-11 bg-[#1d4ed8] px-4 text-sm font-semibold text-white transition hover:bg-[#153e75]"
+                    className="h-11 rounded-md bg-[#1d4ed8] px-4 text-sm font-semibold text-white transition hover:bg-[#153e75]"
                   >
                     Update status
                   </button>
@@ -195,25 +195,25 @@ async function logout() {
 
 function AdminShell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="min-h-screen bg-[#f6f8fb] px-6 py-10 text-slate-950 sm:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#eef3f8] px-5 py-10 text-slate-950 sm:px-8 lg:px-10">
       <section className="mx-auto w-full max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
+          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
             Back to check
           </Link>
           <form action={logout}>
             <button
               type="submit"
-              className="border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
+              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
             >
               Sign out
             </button>
           </form>
         </div>
-        <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
+        <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
           Internal Demo Admin
         </p>
-        <h1 className="mt-3 text-3xl font-semibold text-slate-950">Complaints</h1>
+        <h1 className="mt-4 text-3xl font-semibold text-[#071a33]">Complaints</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
           Advance a complaint during the demo, then open its tracker to see the pipeline update.
         </p>

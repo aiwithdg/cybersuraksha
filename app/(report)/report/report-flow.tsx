@@ -49,7 +49,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "10-digit Indian mobile number or +91 format",
+  phone: "10-digit Indian mobile number, +91 format, or 1600/1601/140 series number",
   upi: "UPI ID such as name@bank",
   email: "Email address",
   url: "Full URL such as https://example.com",
@@ -68,6 +68,10 @@ function detectIdentifierType(value: string): IdentifierType {
 
   if (/^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i.test(trimmed)) {
     return "upi";
+  }
+
+  if (/^(?:(?:\+91[\s-]?|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/.test(trimmed.replace(/\s+/g, ""))) {
+    return "phone";
   }
 
   return "phone";
@@ -277,21 +281,24 @@ export function ReportFlow() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#eef3f8] text-slate-950">
+      <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-6xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
         <div className="mb-8">
-          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
+          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
             Back to check
           </Link>
-          <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
+          <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Report
           </p>
-          <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[#071a33] sm:text-4xl">
             Tell us what happened, one step at a time.
           </h1>
+          <p className="mt-4 text-sm leading-6 text-slate-600">
+            Short focused questions help citizens report quickly without navigating a long government form.
+          </p>
         </div>
 
-        <div className="max-w-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/10 sm:p-6">
           <div className="mb-7">
             <div className="flex items-center justify-between gap-4">
               <p className="text-sm font-semibold text-slate-700">
@@ -299,9 +306,9 @@ export function ReportFlow() {
               </p>
               <p className="text-sm text-slate-500">{Math.round((step / totalSteps) * 100)}% complete</p>
             </div>
-            <div className="mt-3 h-2 bg-slate-100">
+            <div className="mt-3 h-2 rounded-full bg-slate-100">
               <div
-                className="h-full bg-[#1d4ed8] transition-all"
+                className="h-full rounded-full bg-[#1d4ed8] transition-all"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
               />
             </div>
@@ -362,7 +369,7 @@ export function ReportFlow() {
             ) : null}
 
             {errorMessage ? (
-              <p className="mt-6 text-sm font-medium text-red-700" role="alert">
+              <p className="mt-6 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert">
                 {errorMessage}
               </p>
             ) : null}
@@ -372,7 +379,7 @@ export function ReportFlow() {
                 type="button"
                 onClick={previousStep}
                 disabled={step === 1 || isSubmitting}
-                className="h-11 border border-slate-300 px-5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300"
+                className="h-11 rounded-md border border-slate-300 px-5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-300"
               >
                 Back
               </button>
@@ -381,7 +388,7 @@ export function ReportFlow() {
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="h-11 bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75]"
+                  className="h-11 rounded-md bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75]"
                 >
                   Next
                 </button>
@@ -389,7 +396,7 @@ export function ReportFlow() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
+                  className="h-11 rounded-md bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
                   {isSubmitting ? "Submitting..." : "Submit report"}
                 </button>
@@ -421,7 +428,7 @@ function StepOne({
               key={option.category}
               type="button"
               onClick={() => setCategory(option.category)}
-              className={`border p-4 text-left transition ${
+              className={`rounded-md border p-4 text-left transition ${
                 selected
                   ? "border-[#1d4ed8] bg-[#eff6ff]"
                   : "border-slate-200 bg-white hover:border-slate-300"
@@ -466,10 +473,10 @@ function StepTwo({
               setDateNotSure(false);
             }}
             disabled={dateNotSure}
-            className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20 disabled:bg-slate-100"
+            className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20 disabled:bg-slate-100"
           />
         </label>
-        <label className="flex items-start gap-3 border border-slate-200 p-4">
+        <label className="flex items-start gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
           <input
             type="checkbox"
             checked={dateNotSure}
@@ -495,7 +502,7 @@ function StepTwo({
               value={approximateDate}
               onChange={(event) => setApproximateDate(event.target.value)}
               placeholder="e.g. last week, yesterday evening, early August"
-              className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+              className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
             />
           </label>
         ) : null}
@@ -525,7 +532,7 @@ function StepThree({
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">Who&apos;s involved?</h2>
       {wasPrefilled ? (
-        <p className="mt-4 border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-900">
+        <p className="mt-4 rounded-md border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-900">
           Pre-filled from your recent check.
         </p>
       ) : null}
@@ -538,7 +545,7 @@ function StepThree({
           value={suspectValue}
           onChange={(event) => updateSuspectValue(event.target.value)}
           placeholder="e.g. refunddesk-demo@paytm"
-          className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+          className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           autoComplete="off"
         />
         <p className="mt-2 text-sm text-slate-500">{typeHints[suspectType]}</p>
@@ -558,7 +565,7 @@ function StepThree({
                 setSuspectType(type.value);
                 setHasManualSuspectType(true);
               }}
-              className={`h-10 min-w-20 border px-4 text-sm font-medium transition ${
+              className={`h-10 min-w-20 rounded-md border px-4 text-sm font-medium transition ${
                 selected
                   ? "border-[#1d4ed8] bg-[#eff6ff] text-[#153e75]"
                   : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
@@ -586,7 +593,7 @@ function StepFour({
       <p className="mt-3 text-sm leading-6 text-slate-600">
         Add screenshots, PDFs, or documents. You can continue without files and add evidence later.
       </p>
-      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-[#1d4ed8]">
+      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-[#1d4ed8]">
         <span className="text-sm font-semibold text-slate-900">Choose evidence files</span>
         <span className="mt-1 text-sm text-slate-500">PNG, JPG, PDF, or documents for this prototype</span>
         <input type="file" multiple onChange={updateEvidenceFiles} className="sr-only" />
@@ -594,7 +601,7 @@ function StepFour({
       {evidenceFiles.length > 0 ? (
         <ul className="mt-4 space-y-2 text-sm text-slate-700">
           {evidenceFiles.map((file) => (
-            <li key={`${file.name}-${file.lastModified}`} className="border border-slate-200 px-3 py-2">
+            <li key={`${file.name}-${file.lastModified}`} className="rounded-md border border-slate-200 px-3 py-2">
               {file.name} ({Math.ceil(file.size / 1024)} KB)
             </li>
           ))}
@@ -623,7 +630,7 @@ function StepFive({
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">Your details</h2>
       <div className="mt-6 grid gap-4">
-        <label className="flex items-start gap-3 border border-slate-200 p-4">
+        <label className="flex items-start gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
           <input
             type="checkbox"
             checked={isGuest}
@@ -644,7 +651,7 @@ function StepFive({
               <input
                 value={complainantName}
                 onChange={(event) => setComplainantName(event.target.value)}
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
               />
             </label>
             <label className="block">
@@ -652,7 +659,7 @@ function StepFive({
               <input
                 value={complainantContact}
                 onChange={(event) => setComplainantContact(event.target.value)}
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
               />
             </label>
           </>
@@ -718,7 +725,7 @@ function StepSix({
   return (
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">Review your report</h2>
-      <div className="mt-6 divide-y divide-slate-200 border border-slate-200">
+      <div className="mt-6 divide-y divide-slate-200 rounded-md border border-slate-200">
         {rows.map((row) => (
           <div key={row.label} className="grid gap-3 p-4 sm:grid-cols-[150px_1fr_auto] sm:items-center">
             <p className="text-sm font-semibold text-slate-700">{row.label}</p>
@@ -748,19 +755,19 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-4xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
-        <div className="border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <main className="min-h-screen bg-[#eef3f8] text-slate-950">
+      <section className="mx-auto flex min-h-[calc(100vh-76px)] w-full max-w-4xl flex-col justify-center px-5 py-10 sm:px-8 lg:px-10">
+        <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-xl shadow-slate-950/10 sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">Report received</p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">Your reference number</h1>
-          <div className="mt-5 flex flex-col gap-3 border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-5 flex flex-col gap-3 rounded-md border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="break-all text-3xl font-semibold tracking-wide text-slate-950">
               {report.reference_number}
             </p>
             <button
               type="button"
               onClick={copyReference}
-              className="h-11 border border-slate-300 px-5 text-sm font-semibold text-slate-700 hover:border-slate-400"
+              className="h-11 rounded-md border border-slate-300 px-5 text-sm font-semibold text-slate-700 hover:border-slate-400"
             >
               Copy
             </button>
@@ -784,7 +791,7 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
 
           <Link
             href={trackHref}
-            className="mt-8 inline-flex bg-[#1d4ed8] px-5 py-3 text-sm font-semibold text-white hover:bg-[#153e75]"
+            className="mt-8 inline-flex rounded-md bg-[#1d4ed8] px-5 py-3 text-sm font-semibold text-white hover:bg-[#153e75]"
           >
             Track this report -&gt;
           </Link>
@@ -796,7 +803,7 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
 
 function isValidIdentifier(type: IdentifierType, value: string) {
   const validators: Record<IdentifierType, RegExp> = {
-    phone: /^(?:\+91|0)?[6-9]\d{9}$/,
+    phone: /^(?:(?:\+91|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/,
     upi: /^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i,
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     url: /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#][^\s]*)?$/i,

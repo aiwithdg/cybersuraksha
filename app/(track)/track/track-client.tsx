@@ -97,16 +97,16 @@ export function TrackClient() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 sm:px-8 lg:px-10">
+    <main className="min-h-screen bg-[#eef3f8] text-slate-950">
+      <section className="mx-auto flex min-h-[calc(100vh-76px)] w-full max-w-6xl flex-col px-5 py-10 sm:px-8 lg:px-10">
         <div className="pt-8">
-          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
+          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
             Back to check
           </Link>
-          <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
+          <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Track
           </p>
-          <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
+          <h1 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight text-[#071a33] sm:text-4xl">
             Track your report through each status update.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
@@ -114,7 +114,7 @@ export function TrackClient() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 max-w-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+        <form onSubmit={handleSubmit} className="mt-8 max-w-3xl rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/10 sm:p-6">
           <label htmlFor="reference-number" className="mb-2 block text-sm font-medium text-slate-800">
             Reference number
           </label>
@@ -124,19 +124,19 @@ export function TrackClient() {
               value={referenceNumber}
               onChange={(event) => setReferenceNumber(event.target.value.toUpperCase())}
               placeholder="CS-2026-000123"
-              className="h-12 w-full border border-slate-300 px-4 text-base uppercase outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+              className="h-12 w-full rounded-md border border-slate-300 px-4 text-base uppercase outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
               autoComplete="off"
             />
             <button
               type="submit"
               disabled={isLoading}
-              className="h-12 bg-[#1d4ed8] px-6 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="h-12 rounded-md bg-[#1d4ed8] px-6 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isLoading ? "Tracking..." : "Track"}
             </button>
           </div>
           {errorMessage ? (
-            <p className="mt-4 text-sm font-medium text-red-700" role="alert">
+            <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700" role="alert">
               {errorMessage}
             </p>
           ) : null}
@@ -165,7 +165,7 @@ function TrackResult({ result }: { result: TrackResponse }) {
 
   return (
     <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-      <section className="border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/10 sm:p-6">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#1d4ed8]">
@@ -174,7 +174,7 @@ function TrackResult({ result }: { result: TrackResponse }) {
             <h2 className="mt-2 text-2xl font-semibold text-slate-950">Current status</h2>
           </div>
           {withinReviewWindow ? (
-            <p className="border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-900">
+            <p className="rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-medium text-blue-900">
               You&apos;re within our 48-hour review window.
             </p>
           ) : null}
@@ -189,9 +189,9 @@ function TrackResult({ result }: { result: TrackResponse }) {
               <li key={item.status} className="relative">
                 <div className="flex items-start gap-3 md:flex-col">
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center border text-sm font-semibold ${
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${
                       isCompleted
-                        ? "border-[#1d4ed8] bg-[#1d4ed8] text-white"
+                        ? "border-[#0f766e] bg-[#0f766e] text-white"
                         : isActive
                           ? "border-[#1d4ed8] bg-[#eff6ff] text-[#153e75]"
                           : "border-slate-300 bg-white text-slate-400"
@@ -213,11 +213,11 @@ function TrackResult({ result }: { result: TrackResponse }) {
         </ol>
       </section>
 
-      <section className="border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+      <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xl shadow-slate-950/10 sm:p-6">
         <h2 className="text-xl font-semibold text-slate-950">Status history</h2>
         <div className="mt-5 space-y-4">
           {newestFirst.map((entry) => (
-            <article key={entry.id} className="border-l-2 border-[#1d4ed8] pl-4">
+            <article key={entry.id} className="rounded-md border border-slate-200 bg-slate-50 p-4">
               <p className="text-sm font-semibold text-slate-950">{formatStatus(entry.status)}</p>
               {entry.note ? <p className="mt-1 text-sm leading-6 text-slate-600">{entry.note}</p> : null}
               <time className="mt-2 block text-xs font-medium uppercase tracking-[0.12em] text-slate-500">

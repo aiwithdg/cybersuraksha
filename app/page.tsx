@@ -128,26 +128,42 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
-      <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
-        <div className="max-w-3xl">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
-            CyberSuraksha
+    <main className="min-h-screen bg-[#eef3f8] text-slate-950">
+      <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-6xl items-center gap-10 px-5 py-10 sm:px-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:px-10">
+        <div>
+          <p className="mb-4 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
+            Citizen safety check
           </p>
-          <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl">
-            Check suspicious cybercrime identifiers before you act.
+          <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-[#071a33] sm:text-5xl">
+            Check before you trust a number, UPI ID, email, or link.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
-            Look up a phone number, UPI ID, email, or URL against known suspect
-            reports. A match can help you report faster; no match is not a
-            guarantee of safety.
+            CyberSuraksha compares suspicious identifiers with demo suspect
+            reports and highlights trusted Indian caller-series signals where
+            they apply.
           </p>
+          <div className="mt-7 grid gap-3 text-sm text-slate-700 sm:grid-cols-3">
+            {["Check", "Report", "Track"].map((item, index) => (
+              <div key={item} className="rounded-md border border-slate-200 bg-white/80 p-4 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#1d4ed8]">
+                  0{index + 1}
+                </p>
+                <p className="mt-2 font-semibold text-slate-950">{item}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-10 max-w-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+          className="rounded-lg border border-slate-200 bg-white p-4 shadow-xl shadow-slate-950/10 sm:p-6"
         >
+          <div className="mb-5 border-b border-slate-200 pb-4">
+            <h2 className="text-xl font-semibold text-[#071a33]">Run a quick check</h2>
+            <p className="mt-1 text-sm leading-6 text-slate-600">
+              Auto-detect is on. You can still choose the type manually.
+            </p>
+          </div>
           <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
             <div>
               <label
@@ -161,7 +177,7 @@ export default function Home() {
                 value={identifierValue}
                 onChange={(event) => handleValueChange(event.target.value)}
                 placeholder="e.g. refunddesk-demo@paytm"
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                 autoComplete="off"
               />
               <p className="mt-2 text-sm text-slate-500">{typeHints[identifierType]}</p>
@@ -170,7 +186,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isChecking || !identifierValue.trim()}
-              className="h-12 self-end bg-[#1d4ed8] px-6 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="h-12 rounded-md bg-[#1d4ed8] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isChecking ? "Checking..." : "Check now"}
             </button>
@@ -185,7 +201,7 @@ export default function Home() {
                   key={type.value}
                   type="button"
                   onClick={() => handleTypeSelect(type.value)}
-                  className={`h-10 min-w-20 border px-4 text-sm font-medium transition ${
+                  className={`h-10 min-w-20 rounded-md border px-4 text-sm font-medium transition ${
                     isSelected
                       ? "border-[#1d4ed8] bg-[#eff6ff] text-[#153e75]"
                       : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
@@ -199,25 +215,27 @@ export default function Home() {
 
           <Link
             href="/report"
-            className="mt-6 inline-flex text-sm font-medium text-slate-600 hover:text-[#1d4ed8]"
+            className="mt-6 inline-flex text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]"
           >
             Already a victim? Report now -&gt;
           </Link>
         </form>
 
-        <div className="mt-6 max-w-3xl" aria-live="polite">
+        <div className="lg:col-start-2" aria-live="polite">
           {errorMessage ? (
-            <p className="text-sm font-medium text-red-700">{errorMessage}</p>
+            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              {errorMessage}
+            </p>
           ) : null}
 
           {result?.status === "invalid" ? (
-            <p className="text-sm font-medium text-red-700">
+            <p className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               Please enter a valid {identifierTypeLabel(result.identifier_type)}.
             </p>
           ) : null}
 
           {result?.status === "flagged" ? (
-            <section className="border border-red-200 bg-red-50 p-5 text-red-950">
+            <section className="rounded-lg border border-red-200 bg-red-50 p-5 text-red-950 shadow-sm">
               <p className="text-sm font-semibold uppercase tracking-[0.16em] text-red-700">
                 Match found
               </p>
@@ -249,7 +267,7 @@ export default function Home() {
                     }),
                   );
                 }}
-                className="mt-5 inline-flex bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800"
+                className="mt-5 inline-flex rounded-md bg-red-700 px-4 py-3 text-sm font-semibold text-white hover:bg-red-800"
               >
                 This looks suspicious - Report this now -&gt;
               </Link>
@@ -259,7 +277,7 @@ export default function Home() {
           {result?.status === "not_found" ? (
             <div className="grid gap-4">
               {result.phone_trust_signal ? (
-                <section className="border border-blue-200 bg-blue-50 p-5 text-blue-950">
+                <section className="rounded-lg border border-blue-200 bg-blue-50 p-5 text-blue-950 shadow-sm">
                   <p className="text-sm font-semibold uppercase tracking-[0.16em] text-blue-700">
                     Trusted-series signal
                   </p>
@@ -274,7 +292,7 @@ export default function Home() {
                   </p>
                 </section>
               ) : null}
-              <section className="border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
+              <section className="rounded-lg border border-slate-200 bg-white p-5 text-slate-900 shadow-sm">
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
                   No match found
                 </p>

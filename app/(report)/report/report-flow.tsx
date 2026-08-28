@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useState } from "react";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import type { ComplaintCategory, IdentifierType } from "@/lib/types";
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
@@ -13,6 +14,15 @@ type SubmittedReport = {
 };
 
 const totalSteps = 6;
+
+const stepLabels: Record<Step, string> = {
+  1: "What happened",
+  2: "When",
+  3: "Who is involved",
+  4: "Evidence",
+  5: "Your details",
+  6: "Review",
+};
 
 const incidentOptions: Array<{
   label: string;
@@ -284,9 +294,13 @@ export function ReportFlow() {
     <main className="min-h-screen bg-[#eef3f8] text-slate-950">
       <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-6xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
         <div className="mb-8">
-          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Home
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: "CyberSuraksha", href: "/" },
+              { label: "Report" },
+              { label: stepLabels[step] },
+            ]}
+          />
           <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Report
           </p>

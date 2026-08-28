@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import type { Complaint, ComplaintStatus, StatusHistory } from "@/lib/types";
 
 type TrackResponse = {
@@ -100,9 +100,13 @@ export function TrackClient() {
     <main className="min-h-screen bg-[#eef3f8] text-slate-950">
       <section className="mx-auto flex min-h-[calc(100vh-76px)] w-full max-w-6xl flex-col px-5 py-10 sm:px-8 lg:px-10">
         <div className="pt-8">
-          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Home
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: "CyberSuraksha", href: "/" },
+              { label: "Track" },
+              ...(referenceNumber.trim() ? [{ label: referenceNumber.trim().toUpperCase() }] : []),
+            ]}
+          />
           <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Track
           </p>

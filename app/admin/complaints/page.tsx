@@ -1,5 +1,6 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Complaint, ComplaintStatus } from "@/lib/types";
 
@@ -181,9 +182,13 @@ function AdminShell({ children }: { children: React.ReactNode }) {
     <main className="min-h-screen bg-[#eef3f8] px-5 py-10 text-slate-950 sm:px-8 lg:px-10">
       <section className="mx-auto w-full max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Home
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: "CyberSuraksha", href: "/" },
+              { label: "Admin" },
+              { label: "Complaints" },
+            ]}
+          />
           <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
             Demo admin: open access
           </span>

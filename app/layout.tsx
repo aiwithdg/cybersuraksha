@@ -48,6 +48,9 @@ export default function RootLayout({
                 <Link className="rounded-md px-3 py-2 text-blue-50 transition hover:bg-white/10" href="/track">
                   Track
                 </Link>
+                <Link className="rounded-md px-3 py-2 text-blue-50 transition hover:bg-white/10" href="/admin/complaints">
+                  Admin
+                </Link>
               </nav>
             </div>
           </header>

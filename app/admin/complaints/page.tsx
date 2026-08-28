@@ -1,7 +1,5 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { clearAdminSession, isAdminAuthenticated } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Complaint, ComplaintStatus } from "@/lib/types";
 
@@ -24,10 +22,6 @@ type ComplaintRow = Complaint & {
 };
 
 export default async function AdminComplaintsPage() {
-  if (!isAdminAuthenticated()) {
-    redirect("/admin/login");
-  }
-
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -102,7 +96,7 @@ export default async function AdminComplaintsPage() {
                 </div>
 
                 <form action={advanceComplaintStatus} className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
-                  {/* Prototype-only admin control. Production must require authentication and role-based authorization. */}
+                  {/* Hackathon demo only: this admin action is intentionally open. Production must require authentication and role-based authorization. */}
                   <input type="hidden" name="complaint_id" value={complaint.id} />
                   <label className="block">
                     <span className="mb-2 block text-sm font-medium text-slate-800">New status</span>
@@ -152,10 +146,6 @@ export default async function AdminComplaintsPage() {
 async function advanceComplaintStatus(formData: FormData) {
   "use server";
 
-  if (!isAdminAuthenticated()) {
-    redirect("/admin/login");
-  }
-
   const complaintId = formData.get("complaint_id");
   const status = formData.get("status");
   const note = formData.get("note");
@@ -186,13 +176,6 @@ async function advanceComplaintStatus(formData: FormData) {
   revalidatePath("/admin/complaints");
 }
 
-async function logout() {
-  "use server";
-
-  clearAdminSession();
-  redirect("/admin/login");
-}
-
 function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen bg-[#eef3f8] px-5 py-10 text-slate-950 sm:px-8 lg:px-10">
@@ -201,14 +184,9 @@ function AdminShell({ children }: { children: React.ReactNode }) {
           <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
             Home
           </Link>
-          <form action={logout}>
-            <button
-              type="submit"
-              className="rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
-            >
-              Sign out
-            </button>
-          </form>
+          <span className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-900">
+            Demo admin: open access
+          </span>
         </div>
         <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
           Internal Demo Admin

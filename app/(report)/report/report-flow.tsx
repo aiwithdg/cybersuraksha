@@ -277,13 +277,13 @@ export function ReportFlow() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fb] text-slate-950">
+    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
       <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
         <div className="mb-8">
-          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#0f766e]">
+          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
             Back to check
           </Link>
-          <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#0f766e]">
+          <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
             CyberSuraksha Report
           </p>
           <h1 className="mt-3 max-w-3xl text-3xl font-semibold leading-tight text-slate-950 sm:text-4xl">
@@ -301,7 +301,7 @@ export function ReportFlow() {
             </div>
             <div className="mt-3 h-2 bg-slate-100">
               <div
-                className="h-full bg-[#0f766e] transition-all"
+                className="h-full bg-[#1d4ed8] transition-all"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
               />
             </div>
@@ -381,7 +381,7 @@ export function ReportFlow() {
                 <button
                   type="button"
                   onClick={nextStep}
-                  className="h-11 bg-[#0f766e] px-5 text-sm font-semibold text-white transition hover:bg-[#115e59]"
+                  className="h-11 bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75]"
                 >
                   Next
                 </button>
@@ -389,7 +389,7 @@ export function ReportFlow() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="h-11 bg-[#0f766e] px-5 text-sm font-semibold text-white transition hover:bg-[#115e59] disabled:cursor-not-allowed disabled:bg-slate-300"
+                  className="h-11 bg-[#1d4ed8] px-5 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
                 >
                   {isSubmitting ? "Submitting..." : "Submit report"}
                 </button>
@@ -423,7 +423,7 @@ function StepOne({
               onClick={() => setCategory(option.category)}
               className={`border p-4 text-left transition ${
                 selected
-                  ? "border-[#0f766e] bg-[#e6fffa]"
+                  ? "border-[#1d4ed8] bg-[#eff6ff]"
                   : "border-slate-200 bg-white hover:border-slate-300"
               }`}
             >
@@ -466,7 +466,7 @@ function StepTwo({
               setDateNotSure(false);
             }}
             disabled={dateNotSure}
-            className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20 disabled:bg-slate-100"
+            className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20 disabled:bg-slate-100"
           />
         </label>
         <label className="flex items-start gap-3 border border-slate-200 p-4">
@@ -479,12 +479,12 @@ function StepTwo({
                 setIncidentDate("");
               }
             }}
-            className="mt-1 h-4 w-4 accent-[#0f766e]"
+            className="mt-1 h-4 w-4 accent-[#1d4ed8]"
           />
           <span>
             <span className="block text-sm font-semibold text-slate-900">I am not sure</span>
             <span className="mt-1 block text-sm leading-6 text-slate-600">
-              You can still submit the report with an approximate timing note.
+              You can still submit the report with an estimated timing note.
             </span>
           </span>
         </label>
@@ -495,7 +495,7 @@ function StepTwo({
               value={approximateDate}
               onChange={(event) => setApproximateDate(event.target.value)}
               placeholder="e.g. last week, yesterday evening, early August"
-              className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+              className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
             />
           </label>
         ) : null}
@@ -525,7 +525,7 @@ function StepThree({
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">Who&apos;s involved?</h2>
       {wasPrefilled ? (
-        <p className="mt-4 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">
+        <p className="mt-4 border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-900">
           Pre-filled from your recent check.
         </p>
       ) : null}
@@ -538,7 +538,7 @@ function StepThree({
           value={suspectValue}
           onChange={(event) => updateSuspectValue(event.target.value)}
           placeholder="e.g. refunddesk-demo@paytm"
-          className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+          className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           autoComplete="off"
         />
         <p className="mt-2 text-sm text-slate-500">{typeHints[suspectType]}</p>
@@ -560,7 +560,7 @@ function StepThree({
               }}
               className={`h-10 min-w-20 border px-4 text-sm font-medium transition ${
                 selected
-                  ? "border-[#0f766e] bg-[#e6fffa] text-[#115e59]"
+                  ? "border-[#1d4ed8] bg-[#eff6ff] text-[#153e75]"
                   : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
               }`}
             >
@@ -586,7 +586,7 @@ function StepFour({
       <p className="mt-3 text-sm leading-6 text-slate-600">
         Add screenshots, PDFs, or documents. You can continue without files and add evidence later.
       </p>
-      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-[#0f766e]">
+      <label className="mt-6 flex cursor-pointer flex-col items-center justify-center border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-[#1d4ed8]">
         <span className="text-sm font-semibold text-slate-900">Choose evidence files</span>
         <span className="mt-1 text-sm text-slate-500">PNG, JPG, PDF, or documents for this prototype</span>
         <input type="file" multiple onChange={updateEvidenceFiles} className="sr-only" />
@@ -628,7 +628,7 @@ function StepFive({
             type="checkbox"
             checked={isGuest}
             onChange={(event) => setIsGuest(event.target.checked)}
-            className="mt-1 h-4 w-4 accent-[#0f766e]"
+            className="mt-1 h-4 w-4 accent-[#1d4ed8]"
           />
           <span>
             <span className="block text-sm font-semibold text-slate-900">Continue as guest</span>
@@ -644,7 +644,7 @@ function StepFive({
               <input
                 value={complainantName}
                 onChange={(event) => setComplainantName(event.target.value)}
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
               />
             </label>
             <label className="block">
@@ -652,7 +652,7 @@ function StepFive({
               <input
                 value={complainantContact}
                 onChange={(event) => setComplainantContact(event.target.value)}
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
               />
             </label>
           </>
@@ -726,7 +726,7 @@ function StepSix({
             <button
               type="button"
               onClick={() => goToStep(row.step)}
-              className="text-left text-sm font-semibold text-[#0f766e] hover:text-[#115e59] sm:text-right"
+              className="text-left text-sm font-semibold text-[#1d4ed8] hover:text-[#153e75] sm:text-right"
             >
               Edit
             </button>
@@ -748,10 +748,10 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fb] text-slate-950">
+    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
       <section className="mx-auto flex min-h-screen w-full max-w-4xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
         <div className="border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0f766e]">Report received</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">Report received</p>
           <h1 className="mt-3 text-3xl font-semibold text-slate-950">Your reference number</h1>
           <div className="mt-5 flex flex-col gap-3 border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="break-all text-3xl font-semibold tracking-wide text-slate-950">
@@ -784,7 +784,7 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
 
           <Link
             href={trackHref}
-            className="mt-8 inline-flex bg-[#0f766e] px-5 py-3 text-sm font-semibold text-white hover:bg-[#115e59]"
+            className="mt-8 inline-flex bg-[#1d4ed8] px-5 py-3 text-sm font-semibold text-white hover:bg-[#153e75]"
           >
             Track this report -&gt;
           </Link>

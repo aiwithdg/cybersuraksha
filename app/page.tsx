@@ -128,10 +128,10 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fb] text-slate-950">
+    <main className="min-h-screen bg-[#f6f8fb] text-slate-950">
       <section className="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-10 sm:px-8 lg:px-10">
         <div className="max-w-3xl">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#0f766e]">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
             CyberSuraksha
           </p>
           <h1 className="max-w-3xl text-4xl font-semibold leading-tight text-slate-950 sm:text-5xl">
@@ -161,7 +161,7 @@ export default function Home() {
                 value={identifierValue}
                 onChange={(event) => handleValueChange(event.target.value)}
                 placeholder="e.g. refunddesk-demo@paytm"
-                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#0f766e] focus:ring-2 focus:ring-[#0f766e]/20"
+                className="h-12 w-full border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                 autoComplete="off"
               />
               <p className="mt-2 text-sm text-slate-500">{typeHints[identifierType]}</p>
@@ -170,7 +170,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={isChecking || !identifierValue.trim()}
-              className="h-12 self-end bg-[#0f766e] px-6 text-sm font-semibold text-white transition hover:bg-[#115e59] disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="h-12 self-end bg-[#1d4ed8] px-6 text-sm font-semibold text-white transition hover:bg-[#153e75] disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isChecking ? "Checking..." : "Check now"}
             </button>
@@ -187,7 +187,7 @@ export default function Home() {
                   onClick={() => handleTypeSelect(type.value)}
                   className={`h-10 min-w-20 border px-4 text-sm font-medium transition ${
                     isSelected
-                      ? "border-[#0f766e] bg-[#e6fffa] text-[#115e59]"
+                      ? "border-[#1d4ed8] bg-[#eff6ff] text-[#153e75]"
                       : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
                   }`}
                 >
@@ -199,7 +199,7 @@ export default function Home() {
 
           <Link
             href="/report"
-            className="mt-6 inline-flex text-sm font-medium text-slate-600 hover:text-[#0f766e]"
+            className="mt-6 inline-flex text-sm font-medium text-slate-600 hover:text-[#1d4ed8]"
           >
             Already a victim? Report now -&gt;
           </Link>

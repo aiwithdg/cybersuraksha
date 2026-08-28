@@ -1,36 +1,98 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CyberSuraksha
 
-## Getting Started
+CyberSuraksha is a hackathon prototype for a citizen-first cybercrime reporting portal for India. It reimagines the core reporting journey around a simple flow:
 
-First, run the development server:
+1. **Check** a phone number, UPI ID, email, or URL against known suspect demo data.
+2. **Report** what happened through a guided one-question-at-a-time form.
+3. **Track** the report by reference number with a visible status pipeline.
+
+This is not an official government service. It is built for demo and product exploration only.
+
+## How It Differs From cybercrime.gov.in
+
+- Starts with a quick lookup tool so a citizen can check suspicious identifiers before reporting.
+- Uses a continuous guided report flow instead of static, category-first forms.
+- Shows an explicit status timeline and review-window expectations after submission.
+
+## Tech Stack
+
+- Next.js 14 App Router
+- TypeScript
+- Tailwind CSS
+- Supabase Postgres and Storage
+- ESLint
+
+## Local Setup
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create a local environment file:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Fill in:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` is required for report submission, tracking, and the demo admin page. Keep it server-side only and do not commit `.env.local`.
+
+Apply the database migrations in Supabase SQL Editor or with the Supabase CLI:
+
+```bash
+supabase db push
+```
+
+The migrations live in:
+
+```text
+supabase/migrations
+```
+
+Seed demo suspect data:
+
+```bash
+psql "$DATABASE_URL" -f seeds/seed_suspects.sql
+```
+
+Or paste `seeds/seed_suspects.sql` into the Supabase SQL Editor.
+
+Run the app locally:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Main Routes
 
-## Learn More
+- `/` - Check suspicious identifiers
+- `/report` - Guided report flow
+- `/track` - Track by reference number
+- `/admin/complaints` - Prototype-only internal demo page for advancing complaint status
 
-To learn more about Next.js, take a look at the following resources:
+## Prototype Scope
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Intentionally out of scope for this hackathon version:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Real police or I4C system integration
+- Authentication and role-based access control
+- Multi-language support
+- Production evidence review workflows
+- Real identity verification
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Before production use, the admin route must be protected, evidence access must use authenticated role-based policies, and the reference-number lookup model should be hardened against enumeration.

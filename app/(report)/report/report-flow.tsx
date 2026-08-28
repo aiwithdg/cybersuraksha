@@ -49,7 +49,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "10-digit Indian mobile number, +91 format, or 1600/1601/140 series number",
+  phone: "Indian phone number",
   upi: "UPI ID such as name@bank",
   email: "Email address",
   url: "Full URL such as https://example.com",
@@ -285,7 +285,7 @@ export function ReportFlow() {
       <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-6xl gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-10">
         <div className="mb-8">
           <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Back to check
+            Home
           </Link>
           <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Report

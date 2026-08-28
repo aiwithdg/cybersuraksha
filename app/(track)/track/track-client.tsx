@@ -101,7 +101,7 @@ export function TrackClient() {
       <section className="mx-auto flex min-h-[calc(100vh-76px)] w-full max-w-6xl flex-col px-5 py-10 sm:px-8 lg:px-10">
         <div className="pt-8">
           <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Back to check
+            Home
           </Link>
           <p className="mt-5 inline-flex rounded-md border border-[#0f766e]/20 bg-[#ccfbf1] px-3 py-1 text-sm font-semibold uppercase tracking-[0.16em] text-[#115e59]">
             CyberSuraksha Track

@@ -199,7 +199,7 @@ function AdminShell({ children }: { children: React.ReactNode }) {
       <section className="mx-auto w-full max-w-6xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/" className="text-sm font-semibold text-slate-600 hover:text-[#1d4ed8]">
-            Back to check
+            Home
           </Link>
           <form action={logout}>
             <button

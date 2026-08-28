@@ -12,7 +12,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Enter a 10-digit Indian mobile number, +91 format, or 1600/1601/140 series number",
+  phone: "Enter an Indian phone number",
   upi: "Enter a UPI ID such as name@bank",
   email: "Enter an email address",
   url: "Enter a full URL such as https://example.com",
@@ -139,8 +139,7 @@ export default function Home() {
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 sm:text-lg">
             CyberSuraksha compares suspicious identifiers with demo suspect
-            reports and highlights trusted Indian caller-series signals where
-            they apply.
+            reports and gives clear guidance without making risky promises.
           </p>
           <div className="mt-7 grid gap-3 text-sm text-slate-700 sm:grid-cols-3">
             {["Check", "Report", "Track"].map((item, index) => (

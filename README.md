@@ -42,9 +42,12 @@ Fill in:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+ADMIN_USERNAME=
+ADMIN_PASSWORD=
+ADMIN_SESSION_SECRET=
 ```
 
-`SUPABASE_SERVICE_ROLE_KEY` is required for report submission, tracking, and the demo admin page. Keep it server-side only and do not commit `.env.local`.
+`SUPABASE_SERVICE_ROLE_KEY` is required for report submission, tracking, and the demo admin page. `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` protect the prototype admin route. Keep server-side secrets out of `NEXT_PUBLIC_` variables and do not commit `.env.local`.
 
 Apply the database migrations in Supabase SQL Editor or with the Supabase CLI:
 
@@ -83,7 +86,8 @@ http://localhost:3000
 - `/` - Check suspicious identifiers
 - `/report` - Guided report flow
 - `/track` - Track by reference number
-- `/admin/complaints` - Prototype-only internal demo page for advancing complaint status
+- `/admin/login` - Prototype admin login
+- `/admin/complaints` - Internal demo page for advancing complaint status
 
 ## Prototype Scope
 
@@ -95,4 +99,4 @@ Intentionally out of scope for this hackathon version:
 - Production evidence review workflows
 - Real identity verification
 
-Before production use, the admin route must be protected, evidence access must use authenticated role-based policies, and the reference-number lookup model should be hardened against enumeration.
+Before production use, the prototype admin login should be replaced with a real identity provider, evidence access must use authenticated role-based policies, and the reference-number lookup model should be hardened against enumeration.

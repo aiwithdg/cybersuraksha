@@ -1,5 +1,7 @@
 import { revalidatePath } from "next/cache";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { clearAdminSession, isAdminAuthenticated } from "@/lib/admin-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Complaint, ComplaintStatus } from "@/lib/types";
 
@@ -22,6 +24,10 @@ type ComplaintRow = Complaint & {
 };
 
 export default async function AdminComplaintsPage() {
+  if (!isAdminAuthenticated()) {
+    redirect("/admin/login");
+  }
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -146,6 +152,10 @@ export default async function AdminComplaintsPage() {
 async function advanceComplaintStatus(formData: FormData) {
   "use server";
 
+  if (!isAdminAuthenticated()) {
+    redirect("/admin/login");
+  }
+
   const complaintId = formData.get("complaint_id");
   const status = formData.get("status");
   const note = formData.get("note");
@@ -176,13 +186,30 @@ async function advanceComplaintStatus(formData: FormData) {
   revalidatePath("/admin/complaints");
 }
 
+async function logout() {
+  "use server";
+
+  clearAdminSession();
+  redirect("/admin/login");
+}
+
 function AdminShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="min-h-screen bg-[#f6f8fb] px-6 py-10 text-slate-950 sm:px-8 lg:px-10">
       <section className="mx-auto w-full max-w-6xl">
-        <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
-          Back to check
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link href="/" className="text-sm font-medium text-slate-600 hover:text-[#1d4ed8]">
+            Back to check
+          </Link>
+          <form action={logout}>
+            <button
+              type="submit"
+              className="border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
         <p className="mt-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#1d4ed8]">
           Internal Demo Admin
         </p>

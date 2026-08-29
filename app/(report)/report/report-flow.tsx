@@ -252,6 +252,11 @@ export function ReportFlow() {
   async function submitReport(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (step < totalSteps) {
+      nextStep();
+      return;
+    }
+
     const validation = validateStep(6);
 
     if (validation) {
@@ -567,6 +572,9 @@ function StepTwo({
             disabled={dateNotSure}
             className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20 disabled:bg-slate-100"
           />
+          <span className="mt-2 block text-sm leading-6 text-slate-600">
+            It&apos;s okay if this happened a while ago. There&apos;s no penalty for reporting late, and you don&apos;t need to explain any delay.
+          </span>
         </label>
         <label className="flex items-start gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
           <input
@@ -714,6 +722,9 @@ function StepFour({
       <h2 className="text-2xl font-semibold text-slate-950">What evidence do you have?</h2>
       <p className="mt-3 text-sm leading-6 text-slate-600">
         Add screenshots, PDFs, or documents. You can continue without files and add evidence later.
+      </p>
+      <p className="mt-3 text-sm leading-6 text-slate-600">
+        Your evidence is only shared with the agency handling your case.
       </p>
       <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center transition hover:border-[#1d4ed8]">
         <span className="text-sm font-semibold text-slate-900">Choose evidence files</span>

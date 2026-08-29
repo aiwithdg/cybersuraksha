@@ -67,6 +67,13 @@ export default async function AdminComplaintsPage() {
     historyByComplaint.set(entry.complaint_id, entries);
   }
 
+  const visibleComplaints = complaints ?? [];
+  const submittedCount = visibleComplaints.filter((complaint) => complaint.status === "submitted").length;
+  const activeCount = visibleComplaints.filter((complaint) =>
+    complaint.status === "under_review" || complaint.status === "routed",
+  ).length;
+  const witnessCount = visibleComplaints.filter((complaint) => complaint.is_witness_report).length;
+
   return (
     <AdminShell>
       {error ? (
@@ -81,93 +88,119 @@ export default async function AdminComplaintsPage() {
         </div>
       ) : null}
 
-      <div className="grid gap-4">
-        {complaints?.map((complaint) => {
-          const latestHistory = [...(historyByComplaint.get(complaint.id) ?? [])].sort(
-            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-          )[0];
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <DashboardMetric label="Total complaints" value={visibleComplaints.length} />
+        <DashboardMetric label="New submissions" value={submittedCount} />
+        <DashboardMetric label="In progress" value={activeCount} />
+        <DashboardMetric label="Witness reports" value={witnessCount} />
+      </div>
 
-          return (
-            <article key={complaint.id} className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
-              <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <h2 className="text-lg font-semibold text-slate-950">{complaint.reference_number}</h2>
-                    <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-900">
-                      {formatStatus(complaint.status)}
-                    </span>
-                    {complaint.is_witness_report ? (
-                      <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900">
-                        Witness report
-                      </span>
-                    ) : null}
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {complaint.incident_description || "No description supplied."}
-                  </p>
-                  <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-3">
-                    <div>
-                      <dt className="font-semibold text-slate-700">Category</dt>
-                      <dd className="mt-1 text-slate-600">{complaint.category.replaceAll("_", " ")}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-700">Suspect</dt>
-                      <dd className="mt-1 text-slate-600">
+      <div className="mt-6 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 px-5 py-4">
+          <h2 className="text-lg font-semibold text-slate-950">Complaint queue</h2>
+          <p className="mt-1 text-sm text-slate-600">Review incoming reports and advance their visible tracking status.</p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-[1040px] w-full border-collapse text-left text-sm">
+            <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500">
+              <tr>
+                <th className="px-4 py-3">Reference</th>
+                <th className="px-4 py-3">Type</th>
+                <th className="px-4 py-3">Category</th>
+                <th className="px-4 py-3">Suspect</th>
+                <th className="px-4 py-3">Reporter</th>
+                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3">Latest note</th>
+                <th className="px-4 py-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {visibleComplaints.map((complaint) => {
+                const latestHistory = [...(historyByComplaint.get(complaint.id) ?? [])].sort(
+                  (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+                )[0];
+
+                return (
+                  <tr key={complaint.id} className="align-top">
+                    <td className="px-4 py-4">
+                      <Link
+                        href={`/track?ref=${encodeURIComponent(complaint.reference_number)}`}
+                        className="font-semibold text-[#1d4ed8] hover:text-[#153e75]"
+                      >
+                        {complaint.reference_number}
+                      </Link>
+                      <p className="mt-1 text-xs text-slate-500">{formatDate(complaint.created_at)}</p>
+                    </td>
+                    <td className="px-4 py-4">
+                      {complaint.is_witness_report ? (
+                        <span className="inline-flex rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900">
+                          Witness report
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-slate-700">
+                          Victim report
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-4 text-slate-700">{complaint.category.replaceAll("_", " ")}</td>
+                    <td className="max-w-[220px] px-4 py-4 text-slate-700">
+                      <span className="block truncate">
                         {complaint.suspect_identifier_value
                           ? `${complaint.suspect_identifier_type?.toUpperCase()}: ${complaint.suspect_identifier_value}`
                           : "Not provided"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-slate-700">Latest note</dt>
-                      <dd className="mt-1 text-slate-600">{latestHistory?.note ?? "No status note yet."}</dd>
-                    </div>
-                  </dl>
-                </div>
-
-                <form action={advanceComplaintStatus} className="grid gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
-                  {/* Hackathon demo only: this admin action is intentionally open. Production must require authentication and role-based authorization. */}
-                  <input type="hidden" name="complaint_id" value={complaint.id} />
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-medium text-slate-800">New status</span>
-                    <select
-                      name="status"
-                      defaultValue={complaint.status}
-                      className="h-11 w-full rounded-md border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-                    >
-                      {statuses.map((status) => (
-                        <option key={status.value} value={status.value}>
-                          {status.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  <label className="block">
-                    <span className="mb-2 block text-sm font-medium text-slate-800">Note</span>
-                    <input
-                      name="note"
-                      placeholder="Optional update note"
-                      className="h-11 w-full rounded-md border border-slate-300 px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="h-11 rounded-md bg-[#1d4ed8] px-4 text-sm font-semibold text-white transition hover:bg-[#153e75]"
-                  >
-                    Update status
-                  </button>
-                </form>
-              </div>
-
-              <Link
-                href={`/track?ref=${encodeURIComponent(complaint.reference_number)}`}
-                className="mt-4 inline-flex text-sm font-semibold text-[#1d4ed8] hover:text-[#153e75]"
-              >
-                View tracker -&gt;
-              </Link>
-            </article>
-          );
-        })}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 text-slate-700">
+                      <span className="block font-medium text-slate-900">
+                        {complaint.is_guest ? "Guest" : complaint.complainant_name || "Not provided"}
+                      </span>
+                      <span className="mt-1 block text-xs text-slate-500">
+                        {complaint.complainant_contact || "Reference only"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="inline-flex rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-900">
+                        {formatStatus(complaint.status)}
+                      </span>
+                    </td>
+                    <td className="max-w-[240px] px-4 py-4 text-slate-600">
+                      <span className="line-clamp-2">{latestHistory?.note ?? "No status note yet."}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <form action={advanceComplaintStatus} className="grid min-w-[240px] gap-2">
+                        {/* Hackathon demo only: this admin action is intentionally open. Production must require authentication and role-based authorization. */}
+                        <input type="hidden" name="complaint_id" value={complaint.id} />
+                        <select
+                          name="status"
+                          defaultValue={complaint.status}
+                          className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                        >
+                          {statuses.map((status) => (
+                            <option key={status.value} value={status.value}>
+                              {status.label}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          name="note"
+                          placeholder="Optional update note"
+                          className="h-10 rounded-md border border-slate-300 px-3 text-sm outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                        />
+                        <button
+                          type="submit"
+                          className="h-10 rounded-md bg-[#1d4ed8] px-4 text-sm font-semibold text-white transition hover:bg-[#153e75]"
+                        >
+                          Update
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </AdminShell>
   );
@@ -235,12 +268,28 @@ function AdminShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+function DashboardMetric({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+      <p className="text-sm font-medium text-slate-500">{label}</p>
+      <p className="mt-2 text-3xl font-semibold text-[#071a33]">{value}</p>
+    </div>
+  );
+}
+
 function isComplaintStatus(value: string): value is ComplaintStatus {
   return statuses.some((status) => status.value === value);
 }
 
 function formatStatus(status: ComplaintStatus) {
   return statuses.find((item) => item.value === status)?.label ?? status.replaceAll("_", " ");
+}
+
+function formatDate(value: string) {
+  return new Intl.DateTimeFormat("en-IN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(value));
 }
 
 function defaultStatusNote(status: ComplaintStatus) {

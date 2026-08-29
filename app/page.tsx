@@ -11,8 +11,17 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
   { label: "URL", value: "url" },
 ];
 
+const countryCodes = [
+  { label: "India", value: "+91" },
+  { label: "United States", value: "+1" },
+  { label: "United Kingdom", value: "+44" },
+  { label: "UAE", value: "+971" },
+  { label: "Singapore", value: "+65" },
+  { label: "Australia", value: "+61" },
+];
+
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Enter a phone number with country code if available",
+  phone: "Choose the country code, then enter the number",
   upi: "Enter a UPI ID such as name@bank",
   email: "Enter an email address",
   url: "Enter a full URL such as https://example.com",
@@ -82,27 +91,42 @@ function detectIdentifierType(value: string): IdentifierType {
   return "phone";
 }
 
-function normalizeForCheck(value: string, type: IdentifierType) {
+function normalizeForCheck(value: string, type: IdentifierType, countryCode: string) {
   const trimmed = value.trim();
 
   if (type === "phone") {
-    return trimmed.replace(/[\s().-]/g, "");
+    return normalizePhoneNumber(trimmed, countryCode);
   }
 
   return trimmed.toLowerCase();
 }
 
+function normalizePhoneNumber(value: string, countryCode: string) {
+  const cleaned = value.replace(/[\s().-]/g, "");
+
+  if (!cleaned || cleaned.startsWith("+")) {
+    return cleaned;
+  }
+
+  if (/^(?:1600|1601|140)\d+$/.test(cleaned)) {
+    return cleaned;
+  }
+
+  return `${countryCode}${cleaned}`;
+}
+
 export default function Home() {
   const [identifierValue, setIdentifierValue] = useState("");
   const [identifierType, setIdentifierType] = useState<IdentifierType>("phone");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+91");
   const [hasManualType, setHasManualType] = useState(false);
   const [result, setResult] = useState<CheckResult | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const normalizedValue = useMemo(
-    () => normalizeForCheck(identifierValue, identifierType),
-    [identifierValue, identifierType],
+    () => normalizeForCheck(identifierValue, identifierType, phoneCountryCode),
+    [identifierValue, identifierType, phoneCountryCode],
   );
 
   const reportHref =
@@ -212,15 +236,44 @@ export default function Home() {
                   >
                     Phone number, UPI ID, email, or URL
                   </label>
-                  <input
-                    id="identifier"
-                    value={identifierValue}
-                    onChange={(event) => handleValueChange(event.target.value)}
-                    placeholder="e.g. refunddesk-demo@paytm"
-                    className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-                    autoComplete="off"
-                  />
+                  {identifierType === "phone" ? (
+                    <div className="grid gap-2 sm:grid-cols-[140px_1fr]">
+                      <select
+                        aria-label="Country code"
+                        value={phoneCountryCode}
+                        onChange={(event) => setPhoneCountryCode(event.target.value)}
+                        className="h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                      >
+                        {countryCodes.map((country) => (
+                          <option key={country.value} value={country.value}>
+                            {country.value} {country.label}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        id="identifier"
+                        value={identifierValue}
+                        onChange={(event) => handleValueChange(event.target.value)}
+                        placeholder="98765 43210"
+                        className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                        autoComplete="off"
+                        inputMode="tel"
+                      />
+                    </div>
+                  ) : (
+                    <input
+                      id="identifier"
+                      value={identifierValue}
+                      onChange={(event) => handleValueChange(event.target.value)}
+                      placeholder="e.g. refunddesk-demo@paytm"
+                      className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+                      autoComplete="off"
+                    />
+                  )}
                   <p className="mt-2 text-sm text-slate-500">{typeHints[identifierType]}</p>
+                  {identifierType === "phone" && identifierValue.trim() ? (
+                    <p className="mt-1 text-xs text-slate-500">Will check as: {normalizedValue}</p>
+                  ) : null}
                 </div>
 
                 <button

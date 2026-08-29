@@ -58,8 +58,17 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
   { label: "URL", value: "url" },
 ];
 
+const countryCodes = [
+  { label: "India", value: "+91" },
+  { label: "United States", value: "+1" },
+  { label: "United Kingdom", value: "+44" },
+  { label: "UAE", value: "+971" },
+  { label: "Singapore", value: "+65" },
+  { label: "Australia", value: "+61" },
+];
+
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Phone number with country code if available",
+  phone: "Choose the country code, then enter the number",
   upi: "UPI ID such as name@bank",
   email: "Email address",
   url: "Full URL such as https://example.com",
@@ -87,14 +96,28 @@ function detectIdentifierType(value: string): IdentifierType {
   return "phone";
 }
 
-function normalizeIdentifier(value: string, type: IdentifierType) {
+function normalizeIdentifier(value: string, type: IdentifierType, countryCode: string) {
   const trimmed = value.trim();
 
   if (type === "phone") {
-    return trimmed.replace(/[\s().-]/g, "");
+    return normalizePhoneNumber(trimmed, countryCode);
   }
 
   return trimmed.toLowerCase();
+}
+
+function normalizePhoneNumber(value: string, countryCode: string) {
+  const cleaned = value.replace(/[\s().-]/g, "");
+
+  if (!cleaned || cleaned.startsWith("+")) {
+    return cleaned;
+  }
+
+  if (/^(?:1600|1601|140)\d+$/.test(cleaned)) {
+    return cleaned;
+  }
+
+  return `${countryCode}${cleaned}`;
 }
 
 function formatCategory(category: ComplaintCategory | "") {
@@ -115,6 +138,7 @@ export function ReportFlow() {
   const [approximateDate, setApproximateDate] = useState("");
   const [suspectType, setSuspectType] = useState<IdentifierType>("phone");
   const [suspectValue, setSuspectValue] = useState("");
+  const [suspectCountryCode, setSuspectCountryCode] = useState("+91");
   const [hasManualSuspectType, setHasManualSuspectType] = useState(false);
   const [wasPrefilled, setWasPrefilled] = useState(false);
   const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
@@ -132,8 +156,8 @@ export function ReportFlow() {
   );
 
   const normalizedSuspectValue = useMemo(
-    () => normalizeIdentifier(suspectValue, suspectType),
-    [suspectType, suspectValue],
+    () => normalizeIdentifier(suspectValue, suspectType, suspectCountryCode),
+    [suspectCountryCode, suspectType, suspectValue],
   );
 
   useEffect(() => {
@@ -353,7 +377,9 @@ export function ReportFlow() {
               <StepThree
                 normalizedSuspectValue={normalizedSuspectValue}
                 setHasManualSuspectType={setHasManualSuspectType}
+                setSuspectCountryCode={setSuspectCountryCode}
                 setSuspectType={setSuspectType}
+                suspectCountryCode={suspectCountryCode}
                 suspectType={suspectType}
                 suspectValue={suspectValue}
                 updateSuspectValue={updateSuspectValue}
@@ -580,7 +606,9 @@ function StepTwo({
 function StepThree({
   normalizedSuspectValue,
   setHasManualSuspectType,
+  setSuspectCountryCode,
   setSuspectType,
+  suspectCountryCode,
   suspectType,
   suspectValue,
   updateSuspectValue,
@@ -588,7 +616,9 @@ function StepThree({
 }: {
   normalizedSuspectValue: string;
   setHasManualSuspectType: (value: boolean) => void;
+  setSuspectCountryCode: (value: string) => void;
   setSuspectType: (type: IdentifierType) => void;
+  suspectCountryCode: string;
   suspectType: IdentifierType;
   suspectValue: string;
   updateSuspectValue: (value: string) => void;
@@ -606,14 +636,40 @@ function StepThree({
         <label htmlFor="suspect-identifier" className="mb-2 block text-sm font-medium text-slate-800">
           Suspect phone, UPI ID, email, or URL
         </label>
-        <input
-          id="suspect-identifier"
-          value={suspectValue}
-          onChange={(event) => updateSuspectValue(event.target.value)}
-          placeholder="e.g. refunddesk-demo@paytm"
-          className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          autoComplete="off"
-        />
+        {suspectType === "phone" ? (
+          <div className="grid gap-2 sm:grid-cols-[150px_1fr]">
+            <select
+              aria-label="Suspect country code"
+              value={suspectCountryCode}
+              onChange={(event) => setSuspectCountryCode(event.target.value)}
+              className="h-12 rounded-md border border-slate-300 bg-white px-3 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+            >
+              {countryCodes.map((country) => (
+                <option key={country.value} value={country.value}>
+                  {country.value} {country.label}
+                </option>
+              ))}
+            </select>
+            <input
+              id="suspect-identifier"
+              value={suspectValue}
+              onChange={(event) => updateSuspectValue(event.target.value)}
+              placeholder="98765 43210"
+              className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+              autoComplete="off"
+              inputMode="tel"
+            />
+          </div>
+        ) : (
+          <input
+            id="suspect-identifier"
+            value={suspectValue}
+            onChange={(event) => updateSuspectValue(event.target.value)}
+            placeholder="e.g. refunddesk-demo@paytm"
+            className="h-12 w-full rounded-md border border-slate-300 px-4 text-base outline-none transition focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+            autoComplete="off"
+          />
+        )}
         <p className="mt-2 text-sm text-slate-500">{typeHints[suspectType]}</p>
         {suspectValue.trim() ? (
           <p className="mt-2 text-xs text-slate-500">Will be saved as: {normalizedSuspectValue}</p>

@@ -39,9 +39,33 @@ export default async function AdminComplaintsPage() {
   const supabase = createAdminClient();
   const { data: complaints, error } = await supabase
     .from("complaints")
-    .select("*, status_history(id, status, note, created_at)")
+    .select("*")
     .order("created_at", { ascending: false })
     .returns<ComplaintRow[]>();
+
+  const complaintIds = complaints?.map((complaint) => complaint.id) ?? [];
+  const { data: statusHistory } = complaintIds.length
+    ? await supabase
+        .from("status_history")
+        .select("id, complaint_id, status, note, created_at")
+        .in("complaint_id", complaintIds)
+        .order("created_at", { ascending: false })
+        .returns<Array<{
+          id: string;
+          complaint_id: string;
+          status: string;
+          note: string | null;
+          created_at: string;
+        }>>()
+    : { data: [] };
+
+  const historyByComplaint = new Map<string, ComplaintRow["status_history"]>();
+
+  for (const entry of statusHistory ?? []) {
+    const entries = historyByComplaint.get(entry.complaint_id) ?? [];
+    entries.push(entry);
+    historyByComplaint.set(entry.complaint_id, entries);
+  }
 
   return (
     <AdminShell>
@@ -59,7 +83,7 @@ export default async function AdminComplaintsPage() {
 
       <div className="grid gap-4">
         {complaints?.map((complaint) => {
-          const latestHistory = [...(complaint.status_history ?? [])].sort(
+          const latestHistory = [...(historyByComplaint.get(complaint.id) ?? [])].sort(
             (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
           )[0];
 

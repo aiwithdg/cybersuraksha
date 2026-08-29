@@ -72,6 +72,11 @@ export default async function AdminComplaintsPage() {
                     <span className="rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-blue-900">
                       {formatStatus(complaint.status)}
                     </span>
+                    {complaint.is_witness_report ? (
+                      <span className="rounded-md border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900">
+                        Witness report
+                      </span>
+                    ) : null}
                   </div>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
                     {complaint.incident_description || "No description supplied."}

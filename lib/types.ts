@@ -34,6 +34,7 @@ export interface Complaint {
   complainant_name: string | null;
   complainant_contact: string | null;
   is_guest: boolean;
+  is_witness_report: boolean;
   evidence_urls: string[];
   status: ComplaintStatus;
   created_at: string;

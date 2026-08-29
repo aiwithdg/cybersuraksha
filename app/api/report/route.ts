@@ -14,6 +14,7 @@ type ReportPayload = {
   complainant_name?: string | null;
   complainant_contact?: string | null;
   is_guest?: boolean;
+  is_witness_report?: boolean;
   incident_label?: string | null;
 };
 
@@ -91,6 +92,7 @@ export async function POST(request: Request) {
         complainant_name: payload.is_guest ? null : payload.complainant_name || null,
         complainant_contact: payload.is_guest ? null : payload.complainant_contact || null,
         is_guest: Boolean(payload.is_guest),
+        is_witness_report: Boolean(payload.is_witness_report),
         evidence_urls: evidenceUrls.urls,
         status: "submitted",
       })

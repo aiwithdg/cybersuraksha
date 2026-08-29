@@ -121,6 +121,7 @@ export function ReportFlow() {
   const [complainantName, setComplainantName] = useState("");
   const [complainantContact, setComplainantContact] = useState("");
   const [isGuest, setIsGuest] = useState(false);
+  const [isWitnessReport, setIsWitnessReport] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedReport, setSubmittedReport] = useState<SubmittedReport | null>(null);
@@ -250,6 +251,7 @@ export function ReportFlow() {
           complainant_name: isGuest ? null : complainantName.trim(),
           complainant_contact: isGuest ? null : complainantContact.trim(),
           is_guest: isGuest,
+          is_witness_report: isWitnessReport,
           incident_label: selectedIncident?.label ?? null,
         }),
       );
@@ -330,7 +332,12 @@ export function ReportFlow() {
 
           <form onSubmit={submitReport}>
             {step === 1 ? (
-              <StepOne category={category} setCategory={setCategory} />
+              <StepOne
+                category={category}
+                isWitnessReport={isWitnessReport}
+                setCategory={setCategory}
+                setIsWitnessReport={setIsWitnessReport}
+              />
             ) : null}
             {step === 2 ? (
               <StepTwo
@@ -361,6 +368,7 @@ export function ReportFlow() {
                 complainantContact={complainantContact}
                 complainantName={complainantName}
                 isGuest={isGuest}
+                isWitnessReport={isWitnessReport}
                 setComplainantContact={setComplainantContact}
                 setComplainantName={setComplainantName}
                 setIsGuest={setIsGuest}
@@ -377,6 +385,7 @@ export function ReportFlow() {
                 goToStep={goToStep}
                 incidentDate={incidentDate}
                 isGuest={isGuest}
+                isWitnessReport={isWitnessReport}
                 suspectType={suspectType}
                 suspectValue={suspectValue}
               />
@@ -425,14 +434,57 @@ export function ReportFlow() {
 
 function StepOne({
   category,
+  isWitnessReport,
   setCategory,
+  setIsWitnessReport,
 }: {
   category: ComplaintCategory | "";
+  isWitnessReport: boolean;
   setCategory: (category: ComplaintCategory) => void;
+  setIsWitnessReport: (value: boolean) => void;
 }) {
   return (
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">What happened?</h2>
+      <fieldset className="mt-6 rounded-md border border-slate-200 bg-slate-50 p-4">
+        <legend className="text-sm font-semibold text-slate-800">Who is this report for?</legend>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label
+            className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition ${
+              !isWitnessReport
+                ? "border-[#1d4ed8] bg-[#eff6ff]"
+                : "border-slate-200 bg-white hover:border-slate-300"
+            }`}
+          >
+            <input
+              type="radio"
+              name="reporting-mode"
+              checked={!isWitnessReport}
+              onChange={() => setIsWitnessReport(false)}
+              className="mt-1 h-4 w-4 accent-[#1d4ed8]"
+            />
+            <span className="text-sm font-semibold text-slate-900">This happened to me</span>
+          </label>
+          <label
+            className={`flex cursor-pointer items-start gap-3 rounded-md border p-3 transition ${
+              isWitnessReport
+                ? "border-[#1d4ed8] bg-[#eff6ff]"
+                : "border-slate-200 bg-white hover:border-slate-300"
+            }`}
+          >
+            <input
+              type="radio"
+              name="reporting-mode"
+              checked={isWitnessReport}
+              onChange={() => setIsWitnessReport(true)}
+              className="mt-1 h-4 w-4 accent-[#1d4ed8]"
+            />
+            <span className="text-sm font-semibold text-slate-900">
+              I witnessed this happen to someone else
+            </span>
+          </label>
+        </div>
+      </fieldset>
       <div className="mt-6 grid gap-3">
         {incidentOptions.map((option) => {
           const selected = category === option.category;
@@ -629,6 +681,7 @@ function StepFive({
   complainantContact,
   complainantName,
   isGuest,
+  isWitnessReport,
   setComplainantContact,
   setComplainantName,
   setIsGuest,
@@ -636,13 +689,21 @@ function StepFive({
   complainantContact: string;
   complainantName: string;
   isGuest: boolean;
+  isWitnessReport: boolean;
   setComplainantContact: (value: string) => void;
   setComplainantName: (value: string) => void;
   setIsGuest: (value: boolean) => void;
 }) {
   return (
     <section>
-      <h2 className="text-2xl font-semibold text-slate-950">Your details</h2>
+      <h2 className="text-2xl font-semibold text-slate-950">
+        {isWitnessReport ? "Your details (as the person reporting this)" : "Your details"}
+      </h2>
+      {isWitnessReport ? (
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          You&apos;re reporting on behalf of someone else. We&apos;ll still need a way to reach you if we have questions, unless you continue as guest.
+        </p>
+      ) : null}
       <div className="mt-6 grid gap-4">
         <label className="flex items-start gap-3 rounded-md border border-slate-200 bg-slate-50 p-4">
           <input
@@ -693,6 +754,7 @@ function StepSix({
   goToStep,
   incidentDate,
   isGuest,
+  isWitnessReport,
   suspectType,
   suspectValue,
 }: {
@@ -705,6 +767,7 @@ function StepSix({
   goToStep: (step: Step) => void;
   incidentDate: string;
   isGuest: boolean;
+  isWitnessReport: boolean;
   suspectType: IdentifierType;
   suspectValue: string;
 }) {
@@ -739,6 +802,11 @@ function StepSix({
   return (
     <section>
       <h2 className="text-2xl font-semibold text-slate-950">Review your report</h2>
+      {isWitnessReport ? (
+        <span className="mt-4 inline-flex rounded-md border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900">
+          Witness report
+        </span>
+      ) : null}
       <div className="mt-6 divide-y divide-slate-200 rounded-md border border-slate-200">
         {rows.map((row) => (
           <div key={row.label} className="grid gap-3 p-4 sm:grid-cols-[150px_1fr_auto] sm:items-center">

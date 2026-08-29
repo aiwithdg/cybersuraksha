@@ -1,11 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import type { CheckResult, IdentifierType, PhoneTrustSignal, Suspect } from "@/lib/types";
 
 const identifierTypes = new Set<IdentifierType>(["phone", "upi", "email", "url"]);
 
 const validators: Record<IdentifierType, RegExp> = {
-  phone: /^(?:(?:\+91|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/,
+  phone: /^\+?[0-9]{7,15}$/,
   upi: /^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   url: /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#][^\s]*)?$/i,
@@ -73,11 +74,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unable to query suspect data." }, { status: 500 });
     }
 
+    const complaintCount = data
+      ? await getComplaintCount(identifierType, identifierValue)
+      : 0;
+
     if (!data) {
       return NextResponse.json<CheckResult>({
         status: "not_found",
         identifier_type: identifierType,
         identifier_value: identifierValue,
+        complaint_count: complaintCount,
         phone_trust_signal: phoneTrustSignal,
       });
     }
@@ -87,6 +93,7 @@ export async function POST(request: Request) {
       identifier_type: identifierType,
       identifier_value: identifierValue,
       matched_suspect: data,
+      complaint_count: complaintCount,
       phone_trust_signal: phoneTrustSignal,
     });
   } catch {
@@ -122,10 +129,37 @@ function getIdentifierValue(payload: unknown, type: IdentifierType | null) {
   const trimmed = value.trim();
 
   if (type === "phone") {
-    return trimmed.replace(/[\s-]/g, "");
+    return trimmed.replace(/[\s().-]/g, "");
   }
 
   return trimmed.toLowerCase();
+}
+
+async function getComplaintCount(type: IdentifierType, value: string) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceRoleKey) {
+    return 0;
+  }
+
+  const supabase = createAdminClient();
+  const { count, error } = await supabase
+    .from("complaints")
+    .select("id", { count: "exact", head: true })
+    .eq("suspect_identifier_type", type)
+    .eq("suspect_identifier_value", value);
+
+  if (error) {
+    console.error("Complaint count lookup failed", {
+      message: error.message,
+      code: error.code,
+    });
+
+    return 0;
+  }
+
+  return count ?? 0;
 }
 
 function getPhoneTrustSignal(

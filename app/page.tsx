@@ -12,7 +12,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Enter an Indian phone number",
+  phone: "Enter a phone number with country code if available",
   upi: "Enter a UPI ID such as name@bank",
   email: "Enter an email address",
   url: "Enter a full URL such as https://example.com",
@@ -75,7 +75,7 @@ function detectIdentifierType(value: string): IdentifierType {
     return "upi";
   }
 
-  if (/^(?:(?:\+91[\s-]?|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/.test(trimmed.replace(/\s+/g, ""))) {
+  if (/^\+?[0-9]{7,15}$/.test(trimmed.replace(/[\s().-]/g, ""))) {
     return "phone";
   }
 
@@ -86,7 +86,7 @@ function normalizeForCheck(value: string, type: IdentifierType) {
   const trimmed = value.trim();
 
   if (type === "phone") {
-    return trimmed.replace(/[\s-]/g, "");
+    return trimmed.replace(/[\s().-]/g, "");
   }
 
   return trimmed.toLowerCase();
@@ -285,6 +285,9 @@ export default function Home() {
                   <h2 className="mt-2 text-xl font-semibold">
                     This identifier appears in reported suspect data.
                   </h2>
+                  <p className="mt-2 text-sm leading-6 text-red-900">
+                    {formatComplaintCount(result.complaint_count)} mentioned this same identifier in submitted reports.
+                  </p>
                   <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                     <div>
                       <dt className="font-medium text-red-800">Risk level</dt>
@@ -343,9 +346,14 @@ export default function Home() {
                       Not found in our database.
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-slate-600">
-                      Not found in our database - this does not guarantee it&apos;s
-                      safe. Stay cautious.
+                      This identifier is not in our database right now. That does not guarantee it is safe, so stay cautious.
                     </p>
+                    <Link
+                      href="/report"
+                      className="mt-4 inline-flex rounded-md bg-[#1d4ed8] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#153e75]"
+                    >
+                      Faced an issue? Report now -&gt;
+                    </Link>
                   </section>
                 </div>
               ) : null}
@@ -414,6 +422,14 @@ export default function Home() {
       </section>
     </main>
   );
+}
+
+function formatComplaintCount(count = 0) {
+  if (count === 1) {
+    return "1 other person has";
+  }
+
+  return `${count} others have`;
 }
 
 function identifierTypeLabel(type: IdentifierType) {

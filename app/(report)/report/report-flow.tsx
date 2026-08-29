@@ -59,7 +59,7 @@ const identifierTypes: Array<{ label: string; value: IdentifierType }> = [
 ];
 
 const typeHints: Record<IdentifierType, string> = {
-  phone: "Indian phone number",
+  phone: "Phone number with country code if available",
   upi: "UPI ID such as name@bank",
   email: "Email address",
   url: "Full URL such as https://example.com",
@@ -80,7 +80,7 @@ function detectIdentifierType(value: string): IdentifierType {
     return "upi";
   }
 
-  if (/^(?:(?:\+91[\s-]?|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/.test(trimmed.replace(/\s+/g, ""))) {
+  if (/^\+?[0-9]{7,15}$/.test(trimmed.replace(/[\s().-]/g, ""))) {
     return "phone";
   }
 
@@ -91,7 +91,7 @@ function normalizeIdentifier(value: string, type: IdentifierType) {
   const trimmed = value.trim();
 
   if (type === "phone") {
-    return trimmed.replace(/[\s-]/g, "");
+    return trimmed.replace(/[\s().-]/g, "");
   }
 
   return trimmed.toLowerCase();
@@ -885,7 +885,7 @@ function ConfirmationScreen({ report }: { report: SubmittedReport }) {
 
 function isValidIdentifier(type: IdentifierType, value: string) {
   const validators: Record<IdentifierType, RegExp> = {
-    phone: /^(?:(?:\+91|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/,
+    phone: /^\+?[0-9]{7,15}$/,
     upi: /^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i,
     email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
     url: /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#][^\s]*)?$/i,

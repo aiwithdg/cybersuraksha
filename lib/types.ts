@@ -66,5 +66,6 @@ export interface CheckResult {
   identifier_type: IdentifierType;
   identifier_value: string;
   matched_suspect?: Suspect;
+  complaint_count?: number;
   phone_trust_signal?: PhoneTrustSignal;
 }

@@ -28,7 +28,7 @@ const categories = new Set<ComplaintCategory>([
 const identifierTypes = new Set<IdentifierType>(["phone", "upi", "email", "url"]);
 
 const identifierValidators: Record<IdentifierType, RegExp> = {
-  phone: /^(?:(?:\+91|0)?[6-9]\d{9}|1600\d{6}|1601\d{6}|140\d{7})$/,
+  phone: /^\+?[0-9]{7,15}$/,
   upi: /^[a-z0-9.\-_]{2,256}@[a-z][a-z0-9.\-_]{2,64}$/i,
   email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   url: /^https?:\/\/(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[/?#][^\s]*)?$/i,
